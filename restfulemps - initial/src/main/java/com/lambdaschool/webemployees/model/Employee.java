@@ -1,4 +1,4 @@
-package com.lambdaschool.webemployees;
+package com.lambdaschool.webemployees.model;
 
 import java.util.concurrent.atomic.AtomicLong;
 

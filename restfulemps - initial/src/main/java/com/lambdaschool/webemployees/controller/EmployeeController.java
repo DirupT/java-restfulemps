@@ -1,5 +1,8 @@
-package com.lambdaschool.webemployees;
+package com.lambdaschool.webemployees.controller;
 
+import com.lambdaschool.webemployees.exception.ResourseNotFoundException;
+import com.lambdaschool.webemployees.model.Employee;
+import com.lambdaschool.webemployees.WebemployeesApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +14,7 @@ import java.util.ArrayList;
 public class EmployeeController
 {
     //localhost:8080/data/allemployees
-    @GetMapping(value = "/allemployees")
+    @GetMapping(value = "/allemployees", produces = {"application/json"})
     public ResponseEntity<?> getAllEmployees()
     {
         WebemployeesApplication.ourEmpList.empList.sort((e1, e2) -> e1.getName().compareToIgnoreCase(e2.getName()));
@@ -20,17 +23,27 @@ public class EmployeeController
 
 
     // localhost:8080/data/employee/2
-    @GetMapping(value = "/employee/{id}")
+    @GetMapping(value = "/employee/{id}", produces = {"application/json"})
     public ResponseEntity<?> getEmpDetail(
             @PathVariable
                     long id)
     {
-        Employee rtnEmp = WebemployeesApplication.ourEmpList.findEmployee(e -> (e.getId() == id));
+        Employee rtnEmp;
+
+        if(WebemployeesApplication.ourEmpList.findEmployee(e -> (e.getId() == id)) == null)
+        {
+            throw new ResourseNotFoundException("Employee with id " + id + " not found");
+        }
+        else
+        {
+            rtnEmp = WebemployeesApplication.ourEmpList.findEmployee(e -> (e.getId() == id));
+        }
+
         return new ResponseEntity<>(rtnEmp, HttpStatus.OK);
     }
 
     // localhost:8080/data/employees/s
-    @GetMapping(value = "/employees/{letter}")
+    @GetMapping(value = "/employees/{letter}", produces = {"application/json"})
     public ResponseEntity<?> getEmployees(
             @PathVariable
                     char letter)
